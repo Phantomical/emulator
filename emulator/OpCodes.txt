@@ -1,0 +1,275 @@
+
+Opcodes for the platform
+
+Opcode layout
+
+Instruction Type 1
+	Opcode | InstT | Config | Dst    | Src    | Extra Config
+	7 bits |    00 | 2 bits | 5 bits | 5 bits | 11 bits
+
+Instruction Type 2
+	Opcode | InstT | Config | Dst    | Imm16
+	7 bits |    01 | 2 bits | 5 bits | 16 bits
+
+Instruction Type 3
+	Opcode | InstT | Config | Imm
+	7 bits |    10 | 4 bits | 19 bits
+
+Instruction Type 4
+	Reserved
+	
+Config Values - Arithmetic Instructions
+	00 - 64 bit unsigned integer
+	01 - 64 bit signed integer
+	10 - IEEE-754 single precision floating point value
+	11 - IEEE-754 double precision floating point value
+
+Opcodes:
+	0x00 - NOP  : Does not perform an operation
+	0x01 - INT  : Calls the specified interrupt procedure
+	0x02 - SYSCALL : Performs a syscall with the type specified as the immediate operand
+	0x03 - ADD  : dst = dst + src
+	0x04 - SUB  : dst = dst - src
+	0x05 - MUL  : dst = dst * src
+	0x06 - DIV  : dst = dst / src
+	0x07 - MOV  : dst = src if InstT is 00 otherwise see MOV guide
+	0x08 - LD   : Loads the value at src1 into dst
+	0x09 - ST   : Stores src to the value at dst if InstT is 00 otherwise see ST guide
+	0x0A - MOD  : dst = src1 % src2
+	0x0B - AND  : dst = src1 & src2
+	0x0C - OR   : dst = src1 | src2
+	0x0D - XOR  : dst = src1 ^ src2
+	0x0E - NOT  : dst = ~src2
+	0x0F - NEG  : dst = -src2
+	0x10 - SHL  : dst = src1 << src2
+	0x11 - SHR  : dst = src1 >> src2
+	0x12 - HALT : Shuts down the processor
+	0x13 - JMP  : Unconditionally jumps to the given address/offset
+	0x14 - Jx   : Jumps to the given address/offset if the condition is true
+	0x15 - CMP  : Compares dst and src2 and sets the corresponding flags
+	0x16 - FCONV: Converts between floating point representations
+
+Registers:
+	The registers are named R0 through R31
+	R31 is by convention the stack pointer
+
+	There are also some special registers.
+	These can be accessed using MOV and ST
+
+	0x0 (RFLAGS) - Flags register
+	0x1 (RIP)    - Instruction Pointer
+
+	Flags Register:
+		Flag Order:
+			ZF|OF|CF|SF
+
+Interrupts:
+	The interrupt table is stored at memory location 0
+	the maximum offset into the interrupt table is 256
+	The ith interrupt table entry is located at an 
+	offset of i*8.
+
+	Processor Interrupts:
+		0x00 - Base Interrupt (Called if no interrupt handler present, by default calls HALT)
+		0x01 - Invalid Instruction
+		0x02 - Breakpoint
+		0x03 - Integer Divide by 0 (Triggered by DIV or MOD)
+		0x04 - Page Fault (Currently only called for accesses to locations that don't exist in physical mem)
+		0x05 - Debug Interrupt
+		0x06 - General Protection Fault
+		0x07-0x20 - Reserved
+		0x21-0xFF - User Defined
+
+Instruction Set Reference:
+	NOP (0x00):
+		Does not perform an operation.
+	INT (0x01):
+		Generates a call to the interrupt handler specified by
+		src. The only valid form of this instruction is a Type
+		3 instruction (InstT == 10). This instruction pushes RIP 
+		onto the stack then pushes RFLAGS onto the stack then
+		calls the interrupt handler specified by src.
+
+		The interrupt handler called by INT n is found by the 
+		processor in a table at physical address 0. A pointer
+		to the start of the nth interrupt handler will be found
+		at the address n*8. 
+	SYSCALL (0x02):
+		If InstT is 10:
+			Calls the system call specified by the immediate 
+			operand. If the specified syscall does not exist
+			then a general protection fault is raised.
+	ADD (0x03):
+		Adds dst and src then stores the result in dst. The type
+		of addition is specified by the config bits.
+	SUB (0x04):
+		Subtracts dst and src then stores the result in dst. The
+		type of the operands is specified by the config bits.
+	MUL (0x05):
+		Multiplies dst and src then stores the result in dst. The
+		type of the operands is specified by the config bits.
+	DIV (0x06):
+		Divides dst by src and then stores the result in dst. The
+		type of the operands is specified by the config bits.
+
+		Interrupts:
+			Incase of integer divide by 0 interrupt handler 0x03 is called.
+	MOV (0x07):
+		If InstT is 00:
+			Sets dst to the value of src.
+		If InstT is 01:
+			Sets dst to the value of the immediate operand.
+	LD (0x08):
+		If InstT is 00:
+			Loads the value in the memory location specified by src into
+			dst. The config bits are used to specify the size of the 
+			operand. The first bit of the extra config bits specifies
+			whether the source operand is signed or not. Signed operands
+			are sign extended to the size of the register. Unsigned
+			loads set all bytes not used by the operand to 0.
+		If InstT is 01:
+			Sets the dst register to the processor status register specified
+			by the immediate operand.
+		All other instruction types are not supported
+
+		NOTE: Floating point values should be loaded via an unsigned
+		      load of the same size as the operand.
+	ST (0x09):
+		If InstT is 00:
+			Stores the value of src to the memory location specified by
+			dst. Unsigned types are truncated to the size specified by
+			the config bits. Signed types are collapsed to the size 
+			specified by the config bits. The signdedness of the operands
+			is specified by the first bit of the extra config bits.
+		If InstT is 01:
+			Stores the value of dst to the processor status register
+			specified by immediate operand. 
+
+			NOTE: Storing a value to RIP is equivalent to an unconditional
+			      absolute jump.
+	MOD (0x0A):
+		Performs an integer modulus of dst with src and stores the result
+		in dst. The type of the operands is indicated by the config bits.
+
+		NOTE: A General Protection fault (0x06) is issued if the config bits
+		      are 10 or 11 (Floating point operands)
+	AND (0x0B):
+		Performs a bitwise and of dst and src and stores the result in dst.
+		The type of the operands is specified by the config bits.
+	OR  (0x0C):
+		Performs a bitwise or of dst and src and stores the result in dst.
+		The type of the operands is specified by the config bits.
+	XOR (0x0D):
+		Performs a bitwise xor of dst and src and stores the result in dst.
+		The type of the operands is specified by the config bits.
+	NOT (0x0E):
+		Performs a bitwise not of src and stores the result in dst.
+		The type of the operands is specified by the config bits.
+	NEG (0x0F):
+		Performs a arithmetic of src and stores it in dst. This is equivalent
+		to subtracting from 0 and behaves accordingly without setting flags.
+	SHL (0x10):
+		Performs a bitwise shift left on dst by src and stores the result in dst.
+		For signed integer operands a arithmetic left shift is performed
+		instead. This operation is an error for floating point operands.
+		The src operand is masked to the lower 5 bits in unsigned and signed mode.
+	SHR (0x11):
+		Performs a bitwise shift right on dst by src and stores the result in dst.
+		For signed integer operands a arithmetic right shift is performed
+		instead. This operation is an error for floating point operands.
+		The src operand is masked to the lower 5 bits in unsigned and signed mode.
+	HALT (0x12):
+		Halts the processor. No more instructions are executed after this.
+	JMP (0x13):
+		If InstT is 00:
+			Unconditionally jumps to the location specified by dst
+		If InstT is 01:
+			Unconditionally jumps to dst + imm*4
+		If InstT is 10:
+			Unconditionally jumps to the signed offset specified by the
+			immediate. The offset is determined by taking the Imm*4.
+	Jx (0x14):
+		Conditionally jumps based on the value of the flags register.
+		The type of conditional jump is specified by Imm. Supported
+		instruction types are type 01 and type 10.
+		
+		If InstT is 01:
+			The jump specifier is contained in the immediate operand.
+			If the condition is met then RIP wil be set to dst.
+		If InstT is 10:
+			The jump offset is contained in the immediate operand.
+			The condition is specified in the config bits. If the condition
+			is met then the immediate value will be added to RIP through 
+			signed addition.
+
+		Base Jump Instructions:
+			JZ  (0x0) Jump if zero (ZF=0)
+			JNZ (0x1) Jump if not zero (ZF=1)
+			JO  (0x2) Jump if overflow (OF=1)
+			JNO (0x3) Jump if not overflow (OF=0)
+			JC  (0x4) Jump if carry (CF=1)
+			JNC (0x5) Jump if not carry (CF=0)
+			JS  (0x6) Jump if sign (SF=1)
+			JNS (0x7) Jump if not sign (SF=0)
+			
+			JA  (0x8) Jump if above   (ZF=0 && CF=0)
+			JG  (0x9) Jump if greater (ZF=0 && SF=0)
+
+		Compound:
+			JBE (0xA) Jump if below or equal (CF=1 || ZF=1)
+			JLE (0xB) Jump if less or equal (ZF=1 || SF=1)
+
+		Aliases:
+			JAE  (JNC) Jump if above or equal (CF=0)
+			JGE  (JNS) Jump if greater or equal (SF=0)
+			JE   (JZ)  Jump if equal (ZF=1)
+			JNE  (JNZ) Jump if not equal (ZF=0)
+			JB   (JC)  Jump if below (CF=1)
+			JL   (JS)  Jump if less (SF=1)
+
+			JNA  (JBE) Jump if not above (CF=1 || ZF=1)
+			JNAE (JB)  Jump if not above or equal (CF=1)
+			JNG  (JLE) Jump if not greater (ZF=1 || SF=1)
+			JNGE (JL)  Jump if not greater or equal (SF=1)
+			JNB  (JAE) Jump if not below (CF=0)
+			JNBE (JA)  Jump if not below or equal (ZF=0 && CF=0)
+			JNL  (JGE) Jump if not less (SF=0)
+			JNLE (JG)  Jump if not less or equal (ZF=0 && SF=0)
+	CMP (0x15):
+		Compares dst with src and sets the status flags in the 
+		RFLAGS control register accordingly. Flags are set in
+		the same manner as the SUB instruction.
+	FCONV (0x16):
+		Converts between various operand types.
+
+		If InstT is 00:
+			The conversion operation is specified by the extra bits.
+
+			0x0: unsigned integer       -> single precision float
+			0x1: unsigned integer       -> double precision float
+			0x2: signed integer         -> single precision float
+			0x3: signed integer         -> double precision float
+			0x4: double precision float -> unsigned integer
+			0x5: double precision float -> signed integer
+			0x6: double precision float -> single precision float
+			0x7: single precision float -> unsigned integer
+			0x8: single precision float -> signed integer
+			0x9: single precision float -> double precision float
+
+Syscalls:
+	0x1 - Write to serial port:
+		Writes the number of bytes specified in R0 to the serial port
+		starting at the location specified in R1. Sets R0 to the number
+		of bytes that were written to the serial port.
+	0x2 - Read from serial port:
+		Reads the number of bytes specified in R1 from the serial port
+		starting at the location specified in R1. Sets R0 to the number
+		of bytes that were read from the serial port. This syscall will
+		block until reading is complete.
+
+
+
+
+	
+		
+		
