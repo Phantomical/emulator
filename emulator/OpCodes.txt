@@ -260,12 +260,13 @@ Syscalls:
 	0x1 - Write to serial port:
 		Writes the number of bytes specified in R0 to the serial port
 		starting at the location specified in R1. Sets R0 to the number
-		of bytes that were written to the serial port.
+		of bytes that were written to the serial port. Does not affect
+		any registers.
 	0x2 - Read from serial port:
 		Reads the number of bytes specified in R1 from the serial port
 		starting at the location specified in R1. Sets R0 to the number
 		of bytes that were read from the serial port. This syscall will
-		block until reading is complete.
+		block until reading is complete. Does not affect any registers.
 
 
 
