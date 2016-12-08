@@ -12,13 +12,13 @@ uint64_t clz(uint64_t x)
 }
 
 
-#define CHECKED_SADD(x, y, res) __builtin_saddl_overflow(x, y, res)
-#define CHECKED_SSUB(x, y, res) __builtin_ssubl_overflow(x, y, res)
-#define CHECKED_SMUL(x, y, res) __builtin_smull_overflow(x, y, res)
+#define CHECKED_SADD(x, y, res) __builtin_saddll_overflow(x, y, res)
+#define CHECKED_SSUB(x, y, res) __builtin_ssubll_overflow(x, y, res)
+#define CHECKED_SMUL(x, y, res) __builtin_smulll_overflow(x, y, res)
 
-#define CHECKED_UADD(x, y, res) __builtin_uaddl_overflow(x, y, res)
-#define CHECKED_USUB(x, y, res) __builtin_usubl_overflow(x, y, res)
-#define CHECKED_UMUL(x, y, res) __builtin_umull_overflow(x, y, res)
+#define CHECKED_UADD(x, y, res) __builtin_uaddll_overflow(x, y, res)
+#define CHECKED_USUB(x, y, res) __builtin_usubll_overflow(x, y, res)
+#define CHECKED_UMUL(x, y, res) __builtin_umulll_overflow(x, y, res)
 
 #define SEXT_DEF(sz) \
 	int64_t sext##sz(uint64_t x) \
