@@ -4,30 +4,21 @@
 #include <string.h>
 #include <assert.h>
 
-//#ifndef __GNUC__
-//bool __builtin_saddll_overflow(int64_t, int64_t, int64_t*);
-//bool __builtin_ssubll_overflow(int64_t, int64_t, int64_t*);
-//bool __builtin_smulll_overflow(int64_t, int64_t, int64_t*);
-//
-//bool __builtin_uaddll_overflow(uint64_t, uint64_t, uint64_t*);
-//bool __builtin_usubll_overflow(uint64_t, uint64_t, uint64_t*);
-//bool __builtin_umulll_overflow(uint64_t, uint64_t, uint64_t*);
-//
-//int __builtin_clzll(uint64_t x);
-//#endif
+
 
 uint64_t clz(uint64_t x)
 {
 	return x == 0 ? 64 : __builtin_clzll(x);
 }
 
-#define CHECKED_SADD(x, y, res) __builtin_saddll_overflow(x, y, res)
-#define CHECKED_SSUB(x, y, res) __builtin_ssubll_overflow(x, y, res)
-#define CHECKED_SMUL(x, y, res) __builtin_smulll_overflow(x, y, res)
 
-#define CHECKED_UADD(x, y, res) __builtin_uaddll_overflow(x, y, res)
-#define CHECKED_USUB(x, y, res) __builtin_usubll_overflow(x, y, res)
-#define CHECKED_UMUL(x, y, res) __builtin_umulll_overflow(x, y, res)
+#define CHECKED_SADD(x, y, res) __builtin_saddl_overflow(x, y, res)
+#define CHECKED_SSUB(x, y, res) __builtin_ssubl_overflow(x, y, res)
+#define CHECKED_SMUL(x, y, res) __builtin_smull_overflow(x, y, res)
+
+#define CHECKED_UADD(x, y, res) __builtin_uaddl_overflow(x, y, res)
+#define CHECKED_USUB(x, y, res) __builtin_usubl_overflow(x, y, res)
+#define CHECKED_UMUL(x, y, res) __builtin_umull_overflow(x, y, res)
 
 #define SEXT_DEF(sz) \
 	int64_t sext##sz(uint64_t x) \
