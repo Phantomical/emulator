@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 
 	if (argc < 3)
 	{
-		fprintf(stderr, "Usage: emulator <boot-program-file> <memory-size>");
+		fprintf(stderr, "Usage: emulator <boot-program-file> <memory-size>\n");
 		return 1;
 	}
 
@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 
 	if (!f)
 	{
-		fprintf(stderr, "Unable to find file %s.", argv[1]);
+		fprintf(stderr, "Unable to find file %s.\n", argv[1]);
 		return 1;
 	}
 	
