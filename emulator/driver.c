@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 	state.mem_size = strtoull(argv[2], NULL, 0);
 	state.halt = false;
-	state.memory = malloc(state.mem_size);
+	state.memory = malloc((size_t)state.mem_size);
 	
 	fread(state.memory + START_OFFSET, 128, 1, f);
 	fclose(f);

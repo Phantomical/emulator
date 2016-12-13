@@ -1,10 +1,8 @@
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
-
-#include <cstdint>
-#include <iostream>
 
 typedef union
 {
@@ -60,7 +58,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	for (size_t i = 1; i < argc && i < 7; ++i)
+	for (int i = 1; i < argc && i < 7; ++i)
 	{
 		args[i - 1] = (uint32_t)strtoul(argv[i], NULL, 16);
 	}
