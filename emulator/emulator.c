@@ -4,13 +4,49 @@
 #include <string.h>
 #include <assert.h>
 
-
-
+#if defined _WIN32
+#include <intrin.h>
 uint64_t clz(uint64_t x)
 {
-	return x == 0 ? 64 : __builtin_clzll(x);
+	return x == 0 ? 64 : __lzcnt64(x);
 }
 
+bool __builtin_saddll_overflow(int64_t x, int64_t y, int64_t* z) { return false; }
+bool __builtin_ssubll_overflow(int64_t x, int64_t y, int64_t* z) { return false; }
+bool __builtin_smulll_overflow(int64_t x, int64_t y, int64_t* z) { return false; }
+
+bool __builtin_uaddll_overflow(uint64_t x, uint64_t y, uint64_t*z) { return false; }
+bool __builtin_usubll_overflow(uint64_t x, uint64_t y, uint64_t*z) { return false; }
+bool __builtin_umulll_overflow(uint64_t x, uint64_t y, uint64_t*z) { return false; }
+#elif defined __GNUC__
+uint64_t clz(uint64_t value)
+{
+	return value = 0 ? 64 : __builtin_clzll(value);
+}
+#else
+const uint64_t tab64[64] = {
+	63,  0, 58,  1, 59, 47, 53,  2,
+	60, 39, 48, 27, 54, 33, 42,  3,
+	61, 51, 37, 40, 49, 18, 28, 20,
+	55, 30, 34, 11, 43, 14, 22,  4,
+	62, 57, 46, 52, 38, 26, 32, 41,
+	50, 36, 17, 19, 29, 10, 13, 21,
+	56, 45, 25, 31, 35, 16,  9, 12,
+	44, 24, 15,  8, 23,  7,  6,  5 };
+
+uint64_t clz(uint64_t value)
+{
+	if (value == 0)
+		return 64;
+	value |= value >> 1;
+	value |= value >> 2;
+	value |= value >> 4;
+	value |= value >> 8;
+	value |= value >> 16;
+	value |= value >> 32;
+	return 63 - tab64[((uint64_t)((value - (value >> 1)) * 0x07EDD5E59A4E28C2)) >> 58];
+}
+#endif
 
 #define CHECKED_SADD(x, y, res) __builtin_saddll_overflow(x, y, res)
 #define CHECKED_SSUB(x, y, res) __builtin_ssubll_overflow(x, y, res)
@@ -89,6 +125,7 @@ void add(State* st, Instruction inst)
 			interrupt(st, InvalidInstruction);
 			break;
 		}
+		break;
 	default:
 		interrupt(st, InvalidInstruction);
 		break;
@@ -863,7 +900,8 @@ void execute(State* st_)
 		int_op(st_, inst);
 		break;
 	case SYSCALL:
-		assert(false);
+		syscall(st_, inst);
+		break;
 	case ADD:
 		add(st_, inst);
 		break;

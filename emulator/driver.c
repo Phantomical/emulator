@@ -25,14 +25,15 @@ int main(int argc, char** argv)
 		fprintf(stderr, "Unable to find file %s.\n", argv[1]);
 		return 1;
 	}
-	
-	fread(state.memory + START_OFFSET, 128, 1, f);
-	fclose(f);
 
 	state.mem_size = strtoull(argv[2], NULL, 0);
 	state.halt = false;
 	state.memory = malloc(state.mem_size);
 	
+	fread(state.memory + START_OFFSET, 128, 1, f);
+	fclose(f);
+	
+	memset(state.memory, 0, 256 * 8);
 	memset(state.registers, 0, sizeof(state.registers));
 	memset(state.stat_regs, 0, sizeof(state.stat_regs));
 	memcpy(state.syscalls, syscalls(), sizeof(state.syscalls));

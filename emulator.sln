@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emulator", "emulator\Emulator.vcxproj", "{E3384617-396A-46D1-ABF1-B868F96AAABD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bootloader", "bootloader\bootloader.vcxproj", "{C508196F-2A22-430E-A08C-252B38EB5189}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{E3384617-396A-46D1-ABF1-B868F96AAABD}.Release|x64.Build.0 = Release|x64
 		{E3384617-396A-46D1-ABF1-B868F96AAABD}.Release|x86.ActiveCfg = Release|Win32
 		{E3384617-396A-46D1-ABF1-B868F96AAABD}.Release|x86.Build.0 = Release|Win32
+		{C508196F-2A22-430E-A08C-252B38EB5189}.Debug|x64.ActiveCfg = Debug|x64
+		{C508196F-2A22-430E-A08C-252B38EB5189}.Debug|x64.Build.0 = Debug|x64
+		{C508196F-2A22-430E-A08C-252B38EB5189}.Debug|x86.ActiveCfg = Debug|Win32
+		{C508196F-2A22-430E-A08C-252B38EB5189}.Debug|x86.Build.0 = Debug|Win32
+		{C508196F-2A22-430E-A08C-252B38EB5189}.Release|x64.ActiveCfg = Release|x64
+		{C508196F-2A22-430E-A08C-252B38EB5189}.Release|x64.Build.0 = Release|x64
+		{C508196F-2A22-430E-A08C-252B38EB5189}.Release|x86.ActiveCfg = Release|Win32
+		{C508196F-2A22-430E-A08C-252B38EB5189}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

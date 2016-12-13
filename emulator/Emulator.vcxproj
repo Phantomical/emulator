@@ -75,12 +75,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>clang driver.c emulator.c syscalls.c -O3 -flto -o $(TargetPath)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>clang driver.c emulator.c syscalls.c -O3 -flto -o $(TargetPath)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -88,12 +91,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>clang driver.c emulator.c syscalls.c -O3 -flto -o $(TargetPath)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>clang driver.c emulator.c syscalls.c -O3 -flto -o $(TargetPath)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -103,16 +109,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>clang driver.c emulator.c syscalls.c -O3 -flto -o $(TargetPath)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>clang driver.c emulator.c syscalls.c -O3 -flto -o $(TargetPath)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -122,16 +131,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>clang driver.c emulator.c syscalls.c -O3 -flto -o $(TargetPath)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>clang driver.c emulator.c syscalls.c -O3 -flto -o $(TargetPath)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
